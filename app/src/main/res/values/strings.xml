@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AIIM Chat</string>
+
+    <!-- 连接页 -->
+    <string name="chat_hero_title">局域网聊天</string>
+    <string name="chat_hero_subtitle">连接同一网络，开始实时对话</string>
+    <string name="my_username_label">我的用户名</string>
+    <string name="nickname_field_label">显示在聊天里的名字</string>
+    <string name="nickname_field_placeholder">例如：小明</string>
+    <string name="enter_chat_room">进入聊天室</string>
+    <string name="need_username_before_chat">请填写用户名后再进入聊天室</string>
+
+    <string name="network_connection_title">网络连接</string>
+    <string name="network_connection_help">同一 Wi‑Fi：一方「启动服务器」等待，另一方填对方 IP 后「连接服务器」。</string>
+    <string name="local_ipv4_label">本机 IPv4</string>
+    <string name="refresh">刷新</string>
+    <string name="current_network_format">当前网络 · %s</string>
+    <string name="network_troubleshoot">连不上：确认对方已开服务器；避免访客 WiFi；关 VPN；IP 与系统 WLAN 详情一致。</string>
+    <string name="peer_ip_label">对方设备 IP</string>
+    <string name="peer_ip_placeholder">例 192.168.1.100</string>
+    <string name="action_connect">连接</string>
+    <string name="action_start_server">当服务器</string>
+    <string name="action_disconnect">断开连接</string>
+
+    <string name="status_connected">已连接</string>
+    <string name="status_connecting">等待/连接中…</string>
+    <string name="status_failed">连接失败</string>
+    <string name="status_disconnected">未连接</string>
+
+    <!-- 聊天室 -->
+    <string name="chat_room_title">聊天室</string>
+    <string name="sending_as_format">以「%s」发送</string>
+    <string name="cd_back">返回</string>
+    <string name="cd_send">发送</string>
+    <string name="cd_wifi_icon">局域网</string>
+    <string name="message_placeholder">输入消息…</string>
+    <string name="disconnected_go_back_hint">连接已断开，请返回上一页重新连接</string>
+
+    <string name="empty_messages_title">还没有消息</string>
+    <string name="empty_messages_subtitle">发送第一条，开始对话吧</string>
+    <string name="cd_empty_chat">暂无消息</string>
+
+    <string name="msg_status_sending">发送中</string>
+    <string name="msg_status_sent">已发送</string>
+    <string name="msg_status_delivered">已送达</string>
+    <string name="msg_status_failed">失败</string>
+
+    <!-- 兼容旧 key -->
+    <string name="connect">连接</string>
+    <string name="disconnect">断开</string>
+    <string name="send">发送</string>
+    <string name="message_hint">输入消息...</string>
+    <string name="server_ip_hint">输入服务器IP地址</string>
+    <string name="your_ip">你的IP: %s</string>
+    <string name="connected">已连接</string>
+    <string name="disconnected">已断开</string>
+    <string name="connecting">连接中...</string>
+    <string name="connection_failed">连接失败</string>
+    <string name="nickname_hint">输入昵称</string>
+    <string name="settings">设置</string>
+    <string name="clear_history">清空历史</string>
+    <string name="about">关于</string>
+    <string name="version">版本 1.0</string>
+    <string name="about_description">局域网实时聊天室\n基于Socket TCP通信</string>
+</resources>
