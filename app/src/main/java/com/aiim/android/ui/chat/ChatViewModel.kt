@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aiim.android.core.utils.NetworkUtils
+import com.aiim.android.data.local.prefs.UserProfileLocalDataSource
 import com.aiim.android.domain.model.ConnectionState
 import com.aiim.android.domain.model.Message
 import com.aiim.android.domain.usecase.ConnectToServerUseCase
@@ -30,6 +31,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     @ApplicationContext private val appContext: Context,
+    private val userProfileLocalDataSource: UserProfileLocalDataSource,
     private val sendMessageUseCase: SendMessageUseCase,
     private val getMessagesUseCase: GetMessagesUseCase,
     private val connectToServerUseCase: ConnectToServerUseCase,
@@ -52,8 +54,12 @@ class ChatViewModel @Inject constructor(
     val mainScreen: StateFlow<MainScreen> = _mainScreen.asStateFlow()
 
     init {
+        val cachedUsername = userProfileLocalDataSource.load().username.trim()
         _inputState.update {
-            it.copy(localHostIp = NetworkUtils.getLocalIpAddress(appContext))
+            it.copy(
+                localHostIp = NetworkUtils.getLocalIpAddress(appContext),
+                nickname = cachedUsername
+            )
         }
 
         // 监听消息变化
@@ -93,7 +99,7 @@ class ChatViewModel @Inject constructor(
         if (_uiState.value.connectionState !is ConnectionState.Connected) return
         val nick = _inputState.value.nickname.trim()
         if (nick.isEmpty()) {
-            _uiState.update { it.copy(errorMessage = "请先填写用户名") }
+            _uiState.update { it.copy(errorMessage = "请先在我的页面填写用户名") }
             return
         }
         setNicknameUseCase(nick)
@@ -163,6 +169,10 @@ class ChatViewModel @Inject constructor(
         if (_uiState.value.connectionState is ConnectionState.Connected && input.trim().isNotEmpty()) {
             setNicknameUseCase(input.trim())
         }
+    }
+
+    fun syncNicknameFromProfile(username: String) {
+        updateNicknameInput(username.trim())
     }
 
     /**

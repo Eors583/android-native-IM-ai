@@ -98,6 +98,7 @@ dependencies {
     implementation("com.jakewharton.timber:timber:5.0.1")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("io.coil-kt:coil-compose:2.6.0")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 

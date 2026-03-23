@@ -4,23 +4,36 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.aiim.android.core.utils.NetworkUtils
 import com.aiim.android.ui.chat.chatroom.ChatRoomScreen
 import com.aiim.android.ui.chat.connection.ConnectionScreen
 import com.aiim.android.ui.chat.layout.rememberChatLayoutSpec
+import com.aiim.android.ui.profile.ProfileScreen
+import com.aiim.android.ui.profile.ProfileViewModel
 
 /**
  * 根界面：先连接服务器，成功后再进入聊天室。
@@ -40,6 +53,10 @@ fun ChatScreen(
     val activity = context as ComponentActivity
     val windowSizeClass = calculateWindowSizeClass(activity = activity)
     val layoutSpec = rememberChatLayoutSpec(windowSizeClass)
+    val profileViewModel: ProfileViewModel = hiltViewModel()
+    val profileUiState by profileViewModel.uiState.collectAsState()
+    var bottomTab by rememberSaveable { mutableStateOf(BottomTab.Home) }
+    val shouldShowBottomBar = mainScreen != MainScreen.ChatRoom
 
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let { errorMessage ->
@@ -47,30 +64,64 @@ fun ChatScreen(
             viewModel.clearErrorMessage()
         }
     }
+    LaunchedEffect(profileUiState.username) {
+        viewModel.syncNicknameFromProfile(profileUiState.username)
+    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        bottomBar = {
+            if (shouldShowBottomBar) {
+                NavigationBar {
+                    NavigationBarItem(
+                        selected = bottomTab == BottomTab.Home,
+                        onClick = { bottomTab = BottomTab.Home },
+                        icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "首页") },
+                        label = { Text("首页") }
+                    )
+                    NavigationBarItem(
+                        selected = bottomTab == BottomTab.Profile,
+                        onClick = { bottomTab = BottomTab.Profile },
+                        icon = { Icon(imageVector = Icons.Default.Person, contentDescription = "我的") },
+                        label = { Text("我的") }
+                    )
+                }
+            }
+        }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            when (mainScreen) {
-                MainScreen.Connection -> ConnectionScreen(
-                    uiState = uiState,
-                    inputState = inputState,
-                    networkTypeLabel = networkTypeLabel,
-                    viewModel = viewModel,
-                    layoutSpec = layoutSpec,
-                )
-                MainScreen.ChatRoom -> ChatRoomScreen(
-                    uiState = uiState,
-                    inputState = inputState,
-                    viewModel = viewModel,
-                    layoutSpec = layoutSpec,
+            when (bottomTab) {
+                BottomTab.Home -> {
+                    when (mainScreen) {
+                        MainScreen.Connection -> ConnectionScreen(
+                            uiState = uiState,
+                            inputState = inputState,
+                            networkTypeLabel = networkTypeLabel,
+                            viewModel = viewModel,
+                            layoutSpec = layoutSpec,
+                        )
+                        MainScreen.ChatRoom -> ChatRoomScreen(
+                            uiState = uiState,
+                            inputState = inputState,
+                            viewModel = viewModel,
+                            layoutSpec = layoutSpec,
+                        )
+                    }
+                }
+                BottomTab.Profile -> ProfileScreen(
+                    viewModel = profileViewModel,
+                    showMessage = { message -> snackbarHostState.showSnackbar(message) }
                 )
             }
         }
     }
+}
+
+private enum class BottomTab {
+    Home,
+    Profile
 }
