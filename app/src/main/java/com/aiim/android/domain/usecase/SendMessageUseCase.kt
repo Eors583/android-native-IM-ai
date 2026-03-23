@@ -1,6 +1,7 @@
 package com.aiim.android.domain.usecase
 
 import com.aiim.android.domain.model.Message
+import com.aiim.android.domain.model.ChatRoomSummary
 import com.aiim.android.domain.repository.ChatRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -33,6 +34,18 @@ class GetMessagesUseCase @Inject constructor(
      */
     operator fun invoke(): Flow<List<Message>> {
         return repository.getAllMessages()
+    }
+
+    fun getChatRooms(): Flow<List<ChatRoomSummary>> {
+        return repository.getChatRooms()
+    }
+
+    suspend fun createChatRoom(peerIp: String): String {
+        return repository.createChatRoom(peerIp)
+    }
+
+    fun setActiveChatRoom(roomId: String) {
+        repository.setActiveChatRoom(roomId)
     }
 }
 

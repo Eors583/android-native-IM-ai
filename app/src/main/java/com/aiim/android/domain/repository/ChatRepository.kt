@@ -1,6 +1,7 @@
 package com.aiim.android.domain.repository
 
 import com.aiim.android.data.remote.model.SocketMessage
+import com.aiim.android.domain.model.ChatRoomSummary
 import com.aiim.android.domain.model.ConnectionState
 import com.aiim.android.domain.model.Message
 import kotlinx.coroutines.flow.Flow
@@ -15,6 +16,12 @@ interface ChatRepository {
      * 获取所有消息
      */
     fun getAllMessages(): Flow<List<Message>>
+
+    fun getChatRooms(): Flow<List<ChatRoomSummary>>
+
+    suspend fun createChatRoom(peerIp: String): String
+
+    fun setActiveChatRoom(roomId: String)
 
     /**
      * 发送消息

@@ -40,6 +40,9 @@ interface MessageDao {
     @Query("SELECT * FROM messages ORDER BY timestamp DESC")
     fun getAllMessages(): Flow<List<MessageEntity>>
 
+    @Query("SELECT * FROM messages WHERE room_id = :roomId ORDER BY timestamp DESC")
+    fun getMessagesByRoom(roomId: String): Flow<List<MessageEntity>>
+
     /**
      * 获取指定时间之后的消息
      */

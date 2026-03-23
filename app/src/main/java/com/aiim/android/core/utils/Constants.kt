@@ -14,7 +14,7 @@ object Constants {
 
     // 数据库相关常量
     const val DATABASE_NAME = "aiim_chat.db"
-    const val DATABASE_VERSION = 1
+    const val DATABASE_VERSION = 2
 
     // 消息类型
     const val MESSAGE_TYPE_TEXT = "text"

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.aiim.android.core.utils.NetworkUtils
 import com.aiim.android.data.local.prefs.UserProfileLocalDataSource
 import com.aiim.android.domain.model.ConnectionState
+import com.aiim.android.domain.model.ChatRoomSummary
 import com.aiim.android.domain.model.Message
 import com.aiim.android.domain.usecase.ConnectToServerUseCase
 import com.aiim.android.domain.usecase.DisconnectUseCase
@@ -69,6 +70,12 @@ class ChatViewModel @Inject constructor(
             }
         }
 
+        viewModelScope.launch {
+            getMessagesUseCase.getChatRooms().collectLatest { rooms ->
+                _uiState.update { it.copy(chatRooms = rooms) }
+            }
+        }
+
         // 监听连接状态变化（失败原因会通过 errorMessage 弹出 Snackbar）
         viewModelScope.launch {
             getConnectionStateUseCase().collectLatest { connectionState ->
@@ -102,7 +109,20 @@ class ChatViewModel @Inject constructor(
             _uiState.update { it.copy(errorMessage = "请先在我的页面填写用户名") }
             return
         }
-        setNicknameUseCase(nick)
+        val peerIp = _inputState.value.serverIp.trim().ifBlank { _inputState.value.localHostIp.trim() }
+        viewModelScope.launch {
+            getMessagesUseCase.createChatRoom(peerIp = peerIp)
+            setNicknameUseCase(nick)
+            _mainScreen.value = MainScreen.ChatRoom
+        }
+    }
+
+    fun openHistoryChatRoom(roomId: String) {
+        getMessagesUseCase.setActiveChatRoom(roomId)
+        val nick = _inputState.value.nickname.trim()
+        if (nick.isNotEmpty()) {
+            setNicknameUseCase(nick)
+        }
         _mainScreen.value = MainScreen.ChatRoom
     }
 
@@ -256,6 +276,7 @@ class ChatViewModel @Inject constructor(
  */
 data class ChatUiState(
     val messages: List<Message> = emptyList(),
+    val chatRooms: List<ChatRoomSummary> = emptyList(),
     val connectionState: ConnectionState = ConnectionState.Disconnected,
     val errorMessage: String? = null,
     val isLoading: Boolean = false

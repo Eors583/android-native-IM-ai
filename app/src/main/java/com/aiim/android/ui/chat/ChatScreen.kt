@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.aiim.android.core.utils.NetworkUtils
 import com.aiim.android.ui.chat.chatroom.ChatRoomScreen
 import com.aiim.android.ui.chat.connection.ConnectionScreen
+import com.aiim.android.ui.chat.history.ChatRoomsScreen
 import com.aiim.android.ui.chat.layout.rememberChatLayoutSpec
 import com.aiim.android.ui.profile.ProfileScreen
 import com.aiim.android.ui.profile.ProfileViewModel
@@ -80,6 +82,12 @@ fun ChatScreen(
                         label = { Text("首页") }
                     )
                     NavigationBarItem(
+                        selected = bottomTab == BottomTab.ChatRooms,
+                        onClick = { bottomTab = BottomTab.ChatRooms },
+                        icon = { Icon(imageVector = Icons.AutoMirrored.Filled.Chat, contentDescription = "聊天室") },
+                        label = { Text("聊天室") }
+                    )
+                    NavigationBarItem(
                         selected = bottomTab == BottomTab.Profile,
                         onClick = { bottomTab = BottomTab.Profile },
                         icon = { Icon(imageVector = Icons.Default.Person, contentDescription = "我的") },
@@ -94,28 +102,31 @@ fun ChatScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            when (bottomTab) {
-                BottomTab.Home -> {
-                    when (mainScreen) {
-                        MainScreen.Connection -> ConnectionScreen(
-                            uiState = uiState,
-                            inputState = inputState,
-                            networkTypeLabel = networkTypeLabel,
-                            viewModel = viewModel,
-                            layoutSpec = layoutSpec,
-                        )
-                        MainScreen.ChatRoom -> ChatRoomScreen(
-                            uiState = uiState,
-                            inputState = inputState,
-                            viewModel = viewModel,
-                            layoutSpec = layoutSpec,
-                        )
-                    }
-                }
-                BottomTab.Profile -> ProfileScreen(
-                    viewModel = profileViewModel,
-                    showMessage = { message -> snackbarHostState.showSnackbar(message) }
+            if (mainScreen == MainScreen.ChatRoom) {
+                ChatRoomScreen(
+                    uiState = uiState,
+                    inputState = inputState,
+                    viewModel = viewModel,
+                    layoutSpec = layoutSpec,
                 )
+            } else {
+                when (bottomTab) {
+                    BottomTab.Home -> ConnectionScreen(
+                        uiState = uiState,
+                        inputState = inputState,
+                        networkTypeLabel = networkTypeLabel,
+                        viewModel = viewModel,
+                        layoutSpec = layoutSpec,
+                    )
+                    BottomTab.ChatRooms -> ChatRoomsScreen(
+                        rooms = uiState.chatRooms,
+                        onOpenRoom = viewModel::openHistoryChatRoom
+                    )
+                    BottomTab.Profile -> ProfileScreen(
+                        viewModel = profileViewModel,
+                        showMessage = { message -> snackbarHostState.showSnackbar(message) }
+                    )
+                }
             }
         }
     }
@@ -123,5 +134,6 @@ fun ChatScreen(
 
 private enum class BottomTab {
     Home,
+    ChatRooms,
     Profile
 }

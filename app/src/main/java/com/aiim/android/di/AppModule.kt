@@ -49,6 +49,7 @@ object AppModule {
     ): ChatRepository {
         return ChatRepositoryImpl(
             messageDao = database.messageDao(),
+            chatRoomDao = database.chatRoomDao(),
             socketManager = socketManager
         )
     }
