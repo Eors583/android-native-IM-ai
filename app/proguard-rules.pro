@@ -43,3 +43,7 @@
      public static void w(...);
      public static void e(...);
  }
+
+# Optional MNN rules (for future SDK/JNI integration)
+-keep class com.alibaba.mnn.** { *; }
+-keep class com.taobao.meta.** { *; }

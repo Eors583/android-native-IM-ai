@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -34,6 +35,7 @@ import com.aiim.android.ui.chat.chatroom.ChatRoomScreen
 import com.aiim.android.ui.chat.connection.ConnectionScreen
 import com.aiim.android.ui.chat.history.ChatRoomsScreen
 import com.aiim.android.ui.chat.layout.rememberChatLayoutSpec
+import com.aiim.android.ui.ai.AiChatScreen
 import com.aiim.android.ui.profile.ProfileScreen
 import com.aiim.android.ui.profile.ProfileViewModel
 
@@ -88,6 +90,12 @@ fun ChatScreen(
                         label = { Text("聊天室") }
                     )
                     NavigationBarItem(
+                        selected = bottomTab == BottomTab.AI,
+                        onClick = { bottomTab = BottomTab.AI },
+                        icon = { Icon(imageVector = Icons.Default.SmartToy, contentDescription = "AI聊天") },
+                        label = { Text("AI聊天") }
+                    )
+                    NavigationBarItem(
                         selected = bottomTab == BottomTab.Profile,
                         onClick = { bottomTab = BottomTab.Profile },
                         icon = { Icon(imageVector = Icons.Default.Person, contentDescription = "我的") },
@@ -122,6 +130,7 @@ fun ChatScreen(
                         rooms = uiState.chatRooms,
                         onOpenRoom = viewModel::openHistoryChatRoom
                     )
+                    BottomTab.AI -> AiChatScreen()
                     BottomTab.Profile -> ProfileScreen(
                         viewModel = profileViewModel,
                         showMessage = { message -> snackbarHostState.showSnackbar(message) }
@@ -135,5 +144,6 @@ fun ChatScreen(
 private enum class BottomTab {
     Home,
     ChatRooms,
+    AI,
     Profile
 }

@@ -34,6 +34,10 @@ android {
         buildConfig = true
     }
 
+    androidResources {
+        noCompress += listOf("mnn", "bin", "model", "weight", "txt", "json", "md")
+    }
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.8"
     }
@@ -61,6 +65,8 @@ kapt {
 }
 
 dependencies {
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
+
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")

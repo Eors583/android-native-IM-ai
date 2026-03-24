@@ -1,8 +1,10 @@
 package com.aiim.android.di
 
 import android.content.Context
+import com.aiim.android.data.ai.MnnOnDeviceQaEngine
 import com.aiim.android.data.local.database.ChatDatabase
 import com.aiim.android.data.repository.ChatRepositoryImpl
+import com.aiim.android.domain.ai.OnDeviceQaEngine
 import com.aiim.android.domain.repository.ChatRepository
 import com.aiim.android.core.im.SocketManager
 import dagger.Module
@@ -52,5 +54,13 @@ object AppModule {
             chatRoomDao = database.chatRoomDao(),
             socketManager = socketManager
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideOnDeviceQaEngine(
+        engine: MnnOnDeviceQaEngine
+    ): OnDeviceQaEngine {
+        return engine
     }
 }

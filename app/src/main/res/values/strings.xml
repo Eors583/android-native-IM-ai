@@ -63,4 +63,11 @@
     <string name="about">关于</string>
     <string name="version">版本 1.0</string>
     <string name="about_description">局域网实时聊天室\n基于Socket TCP通信</string>
+
+    <!-- AI聊天 -->
+    <string name="ai_chat_title">AI聊天</string>
+    <string name="ai_chat_subtitle">基于端侧 MNN 模型（离线问答）</string>
+    <string name="ai_chat_input_hint">输入你的问题…</string>
+    <string name="ai_chat_send">发送</string>
+    <string name="ai_chat_stop">停止</string>
 </resources>
