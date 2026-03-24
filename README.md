@@ -3,6 +3,16 @@
 安卓原生（Kotlin + Jetpack Compose）局域网 IM 聊天室示例项目。  
 当前实现重点是 **同一局域网内两台设备点对点聊天**（Socket 通信），并包含本地消息持久化与连接状态管理。
 
+## 界面展示
+
+![界面展示](./project-readme/home.jpg)
+
+![界面展示](./project-readme/chat-room.jpg)
+
+![界面展示](./project-readme/aichat.jpg)
+
+![界面展示](./project-readme/me.jpg)
+
 ## 项目特性
 
 - 局域网通信：一台设备启动服务端，另一台设备通过 IP 连接
