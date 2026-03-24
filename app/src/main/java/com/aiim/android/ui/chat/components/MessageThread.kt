@@ -182,6 +182,7 @@ fun MessageItem(
                             MessageStatus.SENDING -> scheme.onSurfaceVariant
                             MessageStatus.SENT -> scheme.primary
                             MessageStatus.DELIVERED -> Color(0xFF059669)
+                            MessageStatus.READ -> Color(0xFF0369A1)
                             MessageStatus.FAILED -> scheme.error
                         }
                         Text(
@@ -189,6 +190,7 @@ fun MessageItem(
                                 MessageStatus.SENDING -> stringResource(R.string.msg_status_sending)
                                 MessageStatus.SENT -> stringResource(R.string.msg_status_sent)
                                 MessageStatus.DELIVERED -> stringResource(R.string.msg_status_delivered)
+                                MessageStatus.READ -> stringResource(R.string.msg_status_read)
                                 MessageStatus.FAILED -> stringResource(R.string.msg_status_failed)
                             },
                             style = MaterialTheme.typography.labelMedium,

@@ -47,6 +47,14 @@ class GetMessagesUseCase @Inject constructor(
     fun setActiveChatRoom(roomId: String) {
         repository.setActiveChatRoom(roomId)
     }
+
+    suspend fun deleteChatRoom(roomId: String) {
+        repository.deleteChatRoom(roomId)
+    }
+
+    suspend fun sendReadReceipt(anchorMessageId: String) {
+        repository.sendReadReceipt(anchorMessageId)
+    }
 }
 
 /**

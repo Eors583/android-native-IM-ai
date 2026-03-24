@@ -3,6 +3,7 @@ package com.aiim.android.ui.chat
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aiim.android.core.utils.Constants
 import com.aiim.android.core.utils.NetworkUtils
 import com.aiim.android.data.local.prefs.UserProfileLocalDataSource
 import com.aiim.android.domain.model.ConnectionState
@@ -53,6 +54,9 @@ class ChatViewModel @Inject constructor(
     /** 连接页 / 聊天室 */
     private val _mainScreen = MutableStateFlow(MainScreen.Connection)
     val mainScreen: StateFlow<MainScreen> = _mainScreen.asStateFlow()
+
+    /** 已针对该锚点向对方发送 read_ack，避免 Flow 重复触发 */
+    private var lastReadReceiptAnchorId: String? = null
 
     init {
         val cachedUsername = userProfileLocalDataSource.load().username.trim()
@@ -111,6 +115,7 @@ class ChatViewModel @Inject constructor(
         }
         val peerIp = _inputState.value.serverIp.trim().ifBlank { _inputState.value.localHostIp.trim() }
         viewModelScope.launch {
+            lastReadReceiptAnchorId = null
             getMessagesUseCase.createChatRoom(peerIp = peerIp)
             setNicknameUseCase(nick)
             _mainScreen.value = MainScreen.ChatRoom
@@ -118,6 +123,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun openHistoryChatRoom(roomId: String) {
+        lastReadReceiptAnchorId = null
         getMessagesUseCase.setActiveChatRoom(roomId)
         val nick = _inputState.value.nickname.trim()
         if (nick.isNotEmpty()) {
@@ -126,8 +132,34 @@ class ChatViewModel @Inject constructor(
         _mainScreen.value = MainScreen.ChatRoom
     }
 
+    fun deleteHistoryChatRoom(roomId: String) {
+        viewModelScope.launch {
+            getMessagesUseCase.deleteChatRoom(roomId)
+        }
+    }
+
     fun backToConnection() {
+        lastReadReceiptAnchorId = null
         _mainScreen.value = MainScreen.Connection
+    }
+
+    /**
+     * 在聊天室界面且已连接时，对最后一条对方文本消息发送已读回执（单锚点去重）。
+     */
+    fun acknowledgePeerMessagesReadIfNeeded(messages: List<Message>) {
+        if (_uiState.value.connectionState !is ConnectionState.Connected) return
+        val anchor = messages.lastOrNull {
+            !it.isSentByMe && it.messageType == Constants.MESSAGE_TYPE_TEXT
+        } ?: return
+        if (anchor.id == lastReadReceiptAnchorId) return
+        lastReadReceiptAnchorId = anchor.id
+        viewModelScope.launch {
+            try {
+                getMessagesUseCase.sendReadReceipt(anchor.id)
+            } catch (_: Exception) {
+                lastReadReceiptAnchorId = null
+            }
+        }
     }
 
     /** 若界面显示的「本机 IP」不对，可手动刷新（应与系统设置里 WLAN 的 IPv4 一致） */

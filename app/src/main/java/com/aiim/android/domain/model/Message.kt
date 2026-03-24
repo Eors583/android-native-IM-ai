@@ -57,8 +57,9 @@ data class Message(
  */
 enum class MessageStatus {
     SENDING,    // 发送中
-    SENT,       // 已发送
-    DELIVERED,  // 已送达
+    SENT,       // 已发送（已从本机写入 socket）
+    DELIVERED,  // 已送达（对端已收到）
+    READ,       // 已读（对端已查看会话）
     FAILED      // 发送失败
 }
 

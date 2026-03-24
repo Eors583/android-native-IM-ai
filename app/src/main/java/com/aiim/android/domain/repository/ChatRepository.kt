@@ -23,6 +23,13 @@ interface ChatRepository {
 
     fun setActiveChatRoom(roomId: String)
 
+    suspend fun deleteChatRoom(roomId: String)
+
+    /**
+     * 向对端发送「已读」回衬，[anchorMessageId] 为该会话中最后一条对方发来的文本消息 id。
+     */
+    suspend fun sendReadReceipt(anchorMessageId: String)
+
     /**
      * 发送消息
      */

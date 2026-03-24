@@ -20,11 +20,16 @@ object Constants {
     const val MESSAGE_TYPE_TEXT = "text"
     const val MESSAGE_TYPE_HEARTBEAT = "heartbeat"
     const val MESSAGE_TYPE_SYSTEM = "system"
+    /** 对端确认收到某条消息的送达回执（content 为原消息 id） */
+    const val MESSAGE_TYPE_DELIVERY_ACK = "delivery_ack"
+    /** 对端已读回执（content 为锚点消息 id，为该会话中最后一条「对方发来的文本消息」id） */
+    const val MESSAGE_TYPE_READ_ACK = "read_ack"
 
     // 消息状态
     const val MESSAGE_STATUS_SENDING = "sending"
     const val MESSAGE_STATUS_SENT = "sent"
     const val MESSAGE_STATUS_DELIVERED = "delivered"
+    const val MESSAGE_STATUS_READ = "read"
     const val MESSAGE_STATUS_FAILED = "failed"
 
     // 连接状态

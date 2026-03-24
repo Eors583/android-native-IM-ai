@@ -58,7 +58,7 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun saveProfile() {
+    fun saveProfile(): Boolean {
         val email = _uiState.value.email.trim()
         val phone = _uiState.value.phone.trim()
         val emailErr = validateEmail(email)
@@ -72,7 +72,7 @@ class ProfileViewModel @Inject constructor(
                     lastSaveMessage = null
                 )
             }
-            return
+            return false
         }
 
         val profile = UserProfile(
@@ -90,6 +90,7 @@ class ProfileViewModel @Inject constructor(
                 lastSaveMessage = "个人信息已保存到本地"
             )
         }
+        return true
     }
 
     fun consumeSaveMessage() {

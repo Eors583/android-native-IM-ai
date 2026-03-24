@@ -128,7 +128,8 @@ fun ChatScreen(
                     )
                     BottomTab.ChatRooms -> ChatRoomsScreen(
                         rooms = uiState.chatRooms,
-                        onOpenRoom = viewModel::openHistoryChatRoom
+                        onOpenRoom = viewModel::openHistoryChatRoom,
+                        onDeleteRoom = viewModel::deleteHistoryChatRoom
                     )
                     BottomTab.AI -> AiChatScreen()
                     BottomTab.Profile -> ProfileScreen(

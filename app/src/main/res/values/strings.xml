@@ -44,6 +44,7 @@
     <string name="msg_status_sending">发送中</string>
     <string name="msg_status_sent">已发送</string>
     <string name="msg_status_delivered">已送达</string>
+    <string name="msg_status_read">已读</string>
     <string name="msg_status_failed">失败</string>
 
     <!-- 兼容旧 key -->

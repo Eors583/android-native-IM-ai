@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.PrintWriter
@@ -111,20 +112,34 @@ class SocketManager {
         }
     }
 
-    fun sendMessage(message: SocketMessage) {
+    /**
+     * 发送一条 JSON 行；返回是否已成功写入对端 socket（不代表对端业务已处理）。
+     */
+    suspend fun sendMessage(message: SocketMessage): Boolean = withContext(Dispatchers.IO) {
+        val socket = peerSocket
+        if (socket == null || socket.isClosed || !socket.isConnected) {
+            Log.e(TAG, "未与对端建立连接，无法发送")
+            return@withContext false
+        }
+        try {
+            val output = PrintWriter(socket.getOutputStream(), true)
+            output.println(gson.toJson(message))
+            if (output.checkError()) {
+                Log.e(TAG, "发送失败: PrintWriter 错误")
+                return@withContext false
+            }
+            Log.d(TAG, "已发送: ${message.messageType} ${message.content.take(80)}")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "发送失败", e)
+            false
+        }
+    }
+
+    /** 心跳等无需等待结果的场景 */
+    fun enqueueSend(message: SocketMessage) {
         ioScope.launch {
-            val socket = peerSocket
-            if (socket == null || socket.isClosed || !socket.isConnected) {
-                Log.e(TAG, "未与对端建立连接，无法发送")
-                return@launch
-            }
-            try {
-                val output = PrintWriter(socket.getOutputStream(), true)
-                output.println(gson.toJson(message))
-                Log.d(TAG, "已发送: ${message.content}")
-            } catch (e: Exception) {
-                Log.e(TAG, "发送失败", e)
-            }
+            sendMessage(message)
         }
     }
 
@@ -156,6 +171,8 @@ class SocketManager {
     fun setNickname(nickname: String) {
         currentNickname = nickname
     }
+
+    fun getNickname(): String = currentNickname
 
     fun getCurrentState(): ConnectionState = _connectionState.value
 

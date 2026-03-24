@@ -73,6 +73,27 @@ interface MessageDao {
     @Query("DELETE FROM messages WHERE timestamp < :before")
     suspend fun deleteMessagesBefore(before: Date)
 
+    @Query("DELETE FROM messages WHERE room_id = :roomId")
+    suspend fun deleteMessagesByRoomId(roomId: String)
+
+    /**
+     * 将会话内我方发送的、且不晚于锚点时间的消息标记为已读（对端 read_ack）
+     */
+    @Query(
+        """
+        UPDATE messages SET status = :readStatus
+        WHERE room_id = :roomId
+        AND is_sent_by_me = 1
+        AND timestamp <= :beforeInclusive
+        AND status != 'FAILED'
+        """
+    )
+    suspend fun markMyMessagesReadUpTo(
+        roomId: String,
+        beforeInclusive: Date,
+        readStatus: String
+    )
+
     /**
      * 获取消息数量
      */

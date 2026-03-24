@@ -25,12 +25,14 @@ fun Message.toEntity(roomId: String): MessageEntity {
 }
 
 fun MessageEntity.toDomain(): Message {
+    val parsedStatus = runCatching { MessageStatus.valueOf(status) }
+        .getOrElse { MessageStatus.SENT }
     return Message(
         id = id,
         content = content,
         sender = sender,
         timestamp = timestamp,
-        status = MessageStatus.valueOf(status),
+        status = parsedStatus,
         isSentByMe = isSentByMe,
         messageType = messageType
     )
@@ -58,6 +60,7 @@ fun SocketMessage.toDomain(): Message {
             "sending" -> MessageStatus.SENDING
             "sent" -> MessageStatus.SENT
             "delivered" -> MessageStatus.DELIVERED
+            "read" -> MessageStatus.READ
             "failed" -> MessageStatus.FAILED
             else -> MessageStatus.SENT
         },

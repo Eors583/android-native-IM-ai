@@ -22,4 +22,7 @@ interface ChatRoomDao {
 
     @Query("SELECT * FROM chat_rooms WHERE id = :roomId LIMIT 1")
     suspend fun getChatRoomById(roomId: String): ChatRoomEntity?
+
+    @Query("DELETE FROM chat_rooms WHERE id = :roomId")
+    suspend fun deleteChatRoomById(roomId: String)
 }
