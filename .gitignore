@@ -16,6 +16,14 @@ captures/
 *.apk
 output-metadata.json
 
+# Kotlin / AGP 缓存（Gradle 8+）
+.kotlin/
+
+# 模块级构建产物（双保险，部分环境仅识别 app/build）
+app/build/
+app/release/
+app/debug/
+
 # IntelliJ
 *.iml
 .idea/
@@ -32,3 +40,20 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# --- 本项目：.tmp_mnn_* 解压 APK、对照官方仓库等（勿提交）---
+.tmp_mnn_*/
+
+# OS / 编辑器杂项
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+
+# VS Code 本地配置（需共享工作区设置时再改为白名单）
+.vscode/
+
+# 若预编译 .so 过大、改用脚本/Release 资源分发，可取消下面两行注释（提交前需写好 README 获取方式）
+# app/src/main/jniLibs/**/*.so
