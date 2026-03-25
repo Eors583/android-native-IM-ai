@@ -106,7 +106,8 @@ class MnnOnDeviceQaEngine @Inject constructor(
         activeSessionRef.set(session)
         return try {
             session.load()
-            val result = session.generateStream(question, keepHistory = false, onToken = onToken)
+            val prompt = buildPromptWithSoul(question)
+            val result = session.generateStream(prompt, keepHistory = false, onToken = onToken)
             QaGenerationResult(
                 text = result.text,
                 stopped = result.stopped,
@@ -122,6 +123,18 @@ class MnnOnDeviceQaEngine @Inject constructor(
         } finally {
             session.release()
             activeSessionRef.compareAndSet(session, null)
+        }
+    }
+
+    private fun buildPromptWithSoul(userQuestion: String): String {
+        val q = userQuestion.trim()
+        if (q.isEmpty()) return ""
+        // 不依赖底层是否识别某个 json 字段；直接把人设作为系统提示词拼到输入里，确保可用。
+        return buildString {
+            append(SOUL_GENTLE_GIRL)
+            append("\n\n用户：")
+            append(q)
+            append("\n助手：")
         }
     }
 
@@ -440,5 +453,13 @@ class MnnOnDeviceQaEngine @Inject constructor(
         /** 与 UI 文案保持一致，便于异常路径提示 */
         const val MODEL_NOT_READY_USER_HINT =
             "当前没有可用的本地模型，请先在右上角「切换模型」中下载模型。"
+
+        // 你要的「soul」：温柔女孩版（可按需再微调措辞）
+        const val SOUL_GENTLE_GIRL = """
+你是一个温柔、耐心、细腻的女生助理。
+你会用友好、让人安心的语气回答，先共情再给结论；表达简洁、不说教、不冷漠。
+你会主动澄清用户意图，但不要连续追问；能一步一步带着用户做。
+避免粗鲁、攻击性、阴阳怪气；不要使用过度卖萌或大量表情。
+"""
     }
 }
