@@ -34,6 +34,7 @@ android {
         buildConfig = true
     }
 
+    // 模型文件已改为运行时下载至 filesDir，不再随 APK 打包；若 assets 中有大文件可保留对应后缀以免压缩
     androidResources {
         noCompress += listOf("mnn", "bin", "model", "weight", "txt", "json", "md")
     }

@@ -4,6 +4,7 @@ import android.content.Context
 import com.aiim.android.data.ai.MnnOnDeviceQaEngine
 import com.aiim.android.data.local.database.ChatDatabase
 import com.aiim.android.data.repository.ChatRepositoryImpl
+import com.aiim.android.domain.ai.OnDeviceLlmModelManager
 import com.aiim.android.domain.ai.OnDeviceQaEngine
 import com.aiim.android.domain.repository.ChatRepository
 import com.aiim.android.core.im.SocketManager
@@ -61,6 +62,14 @@ object AppModule {
     fun provideOnDeviceQaEngine(
         engine: MnnOnDeviceQaEngine
     ): OnDeviceQaEngine {
+        return engine
+    }
+
+    @Provides
+    @Singleton
+    fun provideOnDeviceLlmModelManager(
+        engine: MnnOnDeviceQaEngine
+    ): OnDeviceLlmModelManager {
         return engine
     }
 }
