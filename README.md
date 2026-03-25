@@ -1,7 +1,9 @@
 # android-native-IM-ai
 
-安卓原生（Kotlin + Jetpack Compose）局域网 IM 聊天室示例项目。  
-当前实现重点是 **同一局域网内两台设备点对点聊天**（Socket 通信），并包含本地消息持久化与连接状态管理。
+一个安卓原生（Kotlin + Jetpack Compose）的 **局域网 IM 聊天 + 端侧离线 AI 问答** 示例项目。
+
+- **局域网 IM**：同一 Wi‑Fi 下点对点 TCP Socket 通信（设备 A 当服务器，设备 B 连接 IP）。
+- **端侧 AI（MNN LLM）**：模型不随 APK 打包，首次由用户从云存储下载到本地，之后离线问答；支持模型选择、下载确认与进度提示；内置“温柔女孩”人设（soul）。
 
 ## 界面展示
 
@@ -23,6 +25,10 @@
 - 底部导航：`首页` + `聊天室` + `我的`
 - 个人资料：支持编辑头像、邮箱、用户名、性别、电话，并本地缓存
 - 聊天室历史：每次进入聊天室都会创建会话，并按会话保存对应消息到本地
+- 发送状态：发送中/已发送/已送达/已读/失败（含回执消息）
+- AI 聊天：端侧 MNN 模型离线问答（需要先下载模型）
+- 模型管理：选择模型 → 确认下载 → 下载进度条 → 下载完成后可离线使用
+- 人设（soul）：默认“温柔女孩版”提示词，自动注入每次问答
 - 现代架构：Compose UI + ViewModel + Hilt + Coroutines
 
 ## 技术栈
@@ -52,7 +58,7 @@
 3. 连接两台安卓设备（或两台模拟器）到同一局域网
 4. 分别安装并启动应用
 5. 在设备 A：
-   - 进入连接页后点击“启动服务器”（监听端口 `8080`）
+   - 进入连接页后点击“启动服务器”（监听端口 `8080`，见 `Constants.SOCKET_PORT`）
    - 记录页面展示的本机 IP（局域网 IPv4）
 6. 在设备 B：
    - 输入设备 A 的 IP
@@ -60,6 +66,29 @@
 7. 连接成功后，双方进入聊天室收发消息
 8. 切换到底部 `我的` 页面可编辑并保存个人资料（保存在本地）
 9. 切换到底部 `聊天室` 页面可查看历史聊天室并进入查看对应消息
+
+### 端侧 AI（MNN LLM）使用
+
+AI 模型 **不随 APK 提供**，必须先下载后才能问答：
+
+1. 进入 `AI聊天` 页面，点击右上角 **「切换模型」**
+2. 选择模型（当前只有 `qwen3.5`）→ **确认**
+3. 弹框提示是否下载 → 点击 **下载**
+4. 等待进度完成后即可离线问答
+
+#### 模型云存储目录约定（必看）
+
+模型文件存放在：
+
+- `https://oss-mnn.obs.cn-south-1.myhuaweicloud.com/mnn/{modelId}/`
+
+例如：`qwen3.5` 对应目录 `…/mnn/qwen3.5/`，并且至少包含：
+
+- **必需**：`config.json`、`tokenizer.txt`
+- **必需**：`config.json` 中指定的 `llm_model` 与 `llm_weight`（例如 `llm.mnn`、`llm.mnn.weight`）
+- **可选**（没有会跳过）：`llm_config.json`、`configuration.json`、`llm.mnn.json`、`visual.mnn`、`visual.mnn.weight`
+
+代码位置：`app/src/main/java/com/aiim/android/data/ai/MnnOnDeviceQaEngine.kt`
 
 ### 手机与 PC AI 对聊（可选）
 
@@ -98,6 +127,11 @@ Windows 下：
 .\gradlew.bat assembleDebug
 ```
 
+### 产物位置（常用）
+
+- Debug APK：`app/build/outputs/apk/debug/app-debug.apk`
+- Release（未签名）APK：`app/build/outputs/apk/release/app-release-unsigned.apk`
+
 ## 目录结构（核心）
 
 ```text
@@ -120,14 +154,19 @@ app/src/main/java/com/aiim/android
   - 两台设备网络是否互通
   - 对端是否已点击“启动服务器”
   - 网络策略是否限制了局域网通信
+- AI 无法问答时，优先检查：
+  - 是否已在 `AI聊天` → `切换模型` 完成下载（未下载会直接提示）
+  - OSS 目录下是否已上传 `config.json` / `tokenizer.txt` / `llm_model` / `llm_weight`
+  - 网络/DNS 是否可用（下载阶段会显示中文错误提示）
 
 ## 当前状态与计划
 
 当前已完成：局域网 IM 基础通信与聊天能力。  
 并已支持底部导航与本地个人资料管理。  
+并已支持端侧 AI 模型下载、选择与离线问答。  
 后续可扩展方向：
 
-- AI 对话接入（本地模型或云端 API）
+- AI：更多模型管理（多模型列表、清理模型、下载重试/断点续传）
 - 多设备发现（mDNS / 局域网广播）
 - 文件/图片消息
 - 聊天记录管理（删除、导出、检索）
