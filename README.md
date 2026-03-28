@@ -15,6 +15,8 @@
 
 ![界面展示](./project-readme/me.jpg)
 
+![界面展示](./project-readme/editme.jpg)
+
 ## 项目特性
 
 - 局域网通信：一台设备启动服务端，另一台设备通过 IP 连接
